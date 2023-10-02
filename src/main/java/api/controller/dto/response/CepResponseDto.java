@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Base64;
 
 public class CepResponseDto {
+
     private String cep;
     private String logradouro;
     private String complemento;
@@ -13,7 +14,8 @@ public class CepResponseDto {
     private String ibge;
     private String ddd;
     private String siafi;
-    private Base64 encodedFormat;
+    private String encodedFormat;
+    private String decodedFormat;
     private LocalDate searchMoment;
 
     public String getCep() {
@@ -88,11 +90,11 @@ public class CepResponseDto {
         this.siafi = siafi;
     }
 
-    public Base64 getEncodedFormat() {
+    public String getEncodedFormat() {
         return encodedFormat;
     }
 
-    public void setEncodedFormat(Base64 encodedFormat) {
+    public void setEncodedFormat(String encodedFormat) {
         this.encodedFormat = encodedFormat;
     }
 
@@ -102,5 +104,13 @@ public class CepResponseDto {
 
     public void setSearchMoment(LocalDate searchMoment) {
         this.searchMoment = searchMoment;
+    }
+
+    public String getDecodedFormat() {
+        return decodedFormat;
+    }
+
+    public void setDecodedFormat(String decodedFormat) {
+        this.decodedFormat = decodedFormat;
     }
 }
