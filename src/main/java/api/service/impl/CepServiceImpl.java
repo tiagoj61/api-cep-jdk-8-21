@@ -10,10 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Comparator;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 public class CepServiceImpl implements CepService {
@@ -28,6 +26,7 @@ public class CepServiceImpl implements CepService {
 
     @Override
     public CepResponseDto getAllCepsByName(String uf, String cidade, String name) {
+        LocalDateTime now = LocalDateTime.now();
         String jsonResponse = cepCliente.getDataCep(uf, cidade, name);
         try {
             List<CepResponseDto> cepResponseDto = (List<CepResponseDto>) ConvertJson.convert(jsonResponse, CepResponseDto.class);
@@ -45,6 +44,12 @@ public class CepServiceImpl implements CepService {
                     throw new RuntimeException(e);
                 }
             });
+
+            //LocalDateTime
+            cepResponseDto.stream().forEach(cep -> cep.setSearchMoment(now.toLocalDate()));
+
+            //Optional
+            cepResponseDto.stream().forEach(cep -> Optional.of(cep.getComplemento()).ifPresent(complemento -> complemento.trim()));
 
             removeCeps(cepResponseDto, (o, i) -> o.contains(i.toString()));
         } catch (Exception e) {
