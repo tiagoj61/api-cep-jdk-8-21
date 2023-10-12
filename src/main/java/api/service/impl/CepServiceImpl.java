@@ -51,6 +51,10 @@ public class CepServiceImpl implements CepService {
             //Optional
             cepResponseDto.stream().forEach(cep -> Optional.of(cep.getComplemento()).ifPresent(complemento -> complemento.trim()));
 
+            //Set
+            HashSet<CepResponseDto> cepResponseUnique = new HashSet<>(cepResponseDto);
+
+
             removeCeps(cepResponseDto, (o, i) -> o.contains(i.toString()));
         } catch (Exception e) {
         }
