@@ -46,7 +46,7 @@ public class CepServiceImpl implements CepService {
             });
 
             //LocalDateTime
-            cepResponseDto.stream().forEach(cep -> cep.setSearchMoment(now.toLocalDate()));
+            cepResponseDto.stream().forEach(cep -> cep.actualMoment(LocalDateTime.now()));
 
             //Optional
             cepResponseDto.stream().forEach(cep -> Optional.of(cep.getComplemento()).ifPresent(complemento -> complemento.trim()));
@@ -54,6 +54,8 @@ public class CepServiceImpl implements CepService {
             //Set
             HashSet<CepResponseDto> cepResponseUnique = new HashSet<>(cepResponseDto);
 
+            //Default method in interface and static
+            //SearchTime.class
 
             removeCeps(cepResponseDto, (o, i) -> o.contains(i.toString()));
         } catch (Exception e) {

@@ -1,9 +1,10 @@
 package api.controller.dto.response;
 
-import java.time.LocalDate;
-import java.util.Base64;
+import api.controller.dto.SearchTime;
 
-public class CepResponseDto {
+import java.time.LocalDateTime;
+
+public class CepResponseDto implements SearchTime {
 
     private String cep;
     private String logradouro;
@@ -16,7 +17,7 @@ public class CepResponseDto {
     private String siafi;
     private String encodedFormat;
     private String decodedFormat;
-    private LocalDate searchMoment;
+    private String searchMoment;
 
     public String getCep() {
         return cep;
@@ -98,11 +99,12 @@ public class CepResponseDto {
         this.encodedFormat = encodedFormat;
     }
 
-    public LocalDate getSearchMoment() {
+    public String getSearchMoment() {
         return searchMoment;
     }
 
-    public void setSearchMoment(LocalDate searchMoment) {
+    @Override
+    public void searchMoment(String searchMoment) {
         this.searchMoment = searchMoment;
     }
 
