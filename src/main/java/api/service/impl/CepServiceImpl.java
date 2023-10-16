@@ -46,6 +46,8 @@ public class CepServiceImpl implements CepService {
             });
 
             //LocalDateTime
+            //Default method in interface and static
+            //SearchTime.class
             cepResponseDto.stream().forEach(cep -> cep.actualMoment(LocalDateTime.now()));
 
             //Optional
@@ -54,10 +56,21 @@ public class CepServiceImpl implements CepService {
             //Set
             HashSet<CepResponseDto> cepResponseUnique = new HashSet<>(cepResponseDto);
 
-            //Default method in interface and static
-            //SearchTime.class
+            //Functional Interfaces
+            //Use Options
+            FilterCepsFunction functionCeps = new FilterCepsFunction() {
+                @Override
+                public boolean containsValue(String cep, Integer value) {
+                    return cep.contains(value.toString());
+                }
+            };
+            removeCeps(cepResponseDto, functionCeps);
 
-            removeCeps(cepResponseDto, (o, i) -> o.contains(i.toString()));
+            FilterCepsFunction functionCepsLambda = (str, num) -> str.contains(num.toString());
+            removeCeps(cepResponseDto, functionCepsLambda);
+
+            removeCeps(cepResponseDto, (str, num) -> str.contains(num.toString()));
+
         } catch (Exception e) {
         }
         return null;
