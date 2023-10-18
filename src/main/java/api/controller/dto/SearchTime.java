@@ -10,10 +10,15 @@ public interface SearchTime {
         this.searchMoment(formatDate(now));
     }
 
-    static String formatDate(LocalDateTime now) {
+    public static String formatDate(LocalDateTime now) {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         return now.format(formatter);
+    }
+    public static void formatDateNow(String now) {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDateTime.parse(now).format(formatter);
     }
 }

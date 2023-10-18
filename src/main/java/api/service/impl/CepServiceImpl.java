@@ -1,6 +1,7 @@
 package api.service.impl;
 
 import api.client.CepCliente;
+import api.controller.dto.SearchTime;
 import api.controller.dto.response.CepResponseDto;
 import api.converter.ConvertJson;
 import api.functions.FilterCepsFunction;
@@ -65,11 +66,15 @@ public class CepServiceImpl implements CepService {
                 }
             };
             removeCeps(cepResponseDto, functionCeps);
-
+            //Lambda pass behaviours
             FilterCepsFunction functionCepsLambda = (str, num) -> str.contains(num.toString());
             removeCeps(cepResponseDto, functionCepsLambda);
 
             removeCeps(cepResponseDto, (str, num) -> str.contains(num.toString()));
+
+            //Method Reference
+            cepResponseDto.stream().map(CepResponseDto::getSearchMoment).forEach(SearchTime::formatDateNow);
+
 
         } catch (Exception e) {
         }
