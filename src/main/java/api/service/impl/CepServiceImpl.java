@@ -1,7 +1,6 @@
 package api.service.impl;
 
 import api.client.CepCliente;
-import api.controller.dto.SearchTime;
 import api.controller.dto.response.CepResponseDto;
 import api.converter.ConvertJson;
 import api.functions.FilterCepsFunction;
@@ -9,10 +8,12 @@ import api.service.CepService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+import java.util.List;
 
 @Service
 public class CepServiceImpl implements CepService {
@@ -27,53 +28,24 @@ public class CepServiceImpl implements CepService {
 
     @Override
     public CepResponseDto getAllCepsByName(String uf, String cidade, String name) {
-        LocalDateTime now = LocalDateTime.now();
-        String jsonResponse = cepCliente.getDataCep(uf, cidade, name);
         try {
-            List<CepResponseDto> cepResponseDto = (List<CepResponseDto>) ConvertJson.convert(jsonResponse, CepResponseDto.class);
+            //HTTP Client
+            HttpClient client = HttpClient.newBuilder()
+                    .connectTimeout(Duration.ofSeconds(5))
+                    .build();
 
-            // Parallel array sorting
-            Comparator<CepResponseDto> groupComparator = Comparator.comparing(CepResponseDto::getBairro);
-            Arrays.parallelSort(cepResponseDto.toArray(new CepResponseDto[cepResponseDto.size()]), groupComparator);
+            URI uri = URI.create("https://viacep.com.br/ws" + "/"+uf+"/"+cidade+"/"+name+"/json");
 
-            //BASE 64
-            cepResponseDto.stream().forEach(cep -> {
-                try {
-                    cep.setEncodedFormat(Base64.getEncoder().encodeToString((cep.getUf() + " - " + cep.getLocalidade() + " - " + cep.getLogradouro()).getBytes("utf-8")));
-                    cep.setDecodedFormat(new String(Base64.getDecoder().decode(cep.getEncodedFormat()), StandardCharsets.UTF_8));
-                } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            HttpRequest request = HttpRequest.newBuilder()
+                    .GET()
+                    .uri(uri)
+                    .build();
 
-            //LocalDateTime
-            //Default method in interface and static
-            //SearchTime.class
-            cepResponseDto.stream().forEach(cep -> cep.actualMoment(LocalDateTime.now()));
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            //Optional
-            cepResponseDto.stream().forEach(cep -> Optional.of(cep.getComplemento()).ifPresent(complemento -> complemento.trim()));
 
-            //Set
-            HashSet<CepResponseDto> cepResponseUnique = new HashSet<>(cepResponseDto);
+            List<CepResponseDto> cepResponseDto = (List<CepResponseDto>) ConvertJson.convert(response.body(), CepResponseDto.class);
 
-            //Functional Interfaces
-            //Use Options
-            FilterCepsFunction functionCeps = new FilterCepsFunction() {
-                @Override
-                public boolean containsValue(String cep, Integer value) {
-                    return cep.contains(value.toString());
-                }
-            };
-            removeCeps(cepResponseDto, functionCeps);
-            //Lambda pass behaviours
-            FilterCepsFunction functionCepsLambda = (str, num) -> str.contains(num.toString());
-            removeCeps(cepResponseDto, functionCepsLambda);
-
-            removeCeps(cepResponseDto, (str, num) -> str.contains(num.toString()));
-
-            //Method Reference
-            cepResponseDto.stream().map(CepResponseDto::getSearchMoment).forEach(SearchTime::formatDateNow);
 
 
         } catch (Exception e) {
