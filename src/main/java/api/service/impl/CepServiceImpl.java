@@ -35,6 +35,11 @@ public class CepServiceImpl implements CepService {
 
             List<CepResponseDto> cepResponseDto = (List<CepResponseDto>) ConvertJson.convert(response.body(), CepResponseDto.class);
 
+            //Execução do codigo java NomeArquivo.java
+            //Variaveis por inferencia
+
+            var cepResponseDtoInferencia = (List<CepResponseDto>) ConvertJson.convert(response.body(), CepResponseDto.class);
+
 
         } catch (Exception e) {
         }
