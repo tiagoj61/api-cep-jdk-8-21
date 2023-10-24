@@ -6,6 +6,7 @@ import api.converter.ConvertJson;
 import api.functions.FilterCepsFunction;
 import api.service.CepService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -15,6 +16,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CepServiceImpl implements CepService {
@@ -39,6 +42,14 @@ public class CepServiceImpl implements CepService {
             //Variaveis por inferencia
 
             var cepResponseDtoInferencia = (List<CepResponseDto>) ConvertJson.convert(response.body(), CepResponseDto.class);
+
+            //Performace
+            //G1 - reduziu em 60 o tempo de esperado cliente pelo GC
+
+            //Local-Variable Syntax for Lambda
+            var allCeps = cepResponseDtoInferencia.stream().map(cepResponseDto1 -> cepResponseDto1.getCep())
+                    .map((@NonNull var x) -> x.toUpperCase())
+                    .collect(Collectors.joining(", "));
 
 
         } catch (Exception e) {
